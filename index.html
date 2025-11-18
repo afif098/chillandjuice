@@ -1,122 +1,538 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FreshJuice - Segarnya Jus Buah Alami</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chill & Juice — Toko Jus</title>
+
+  <!-- Simple style (dimasukkan langsung agar mudah coba) -->
+  <style>
+    /* RESET + BASE */
+    *{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, -apple-system, "Poppins", sans-serif}
+    body{background:#fffef9;color:#333;line-height:1.4}
+    a{color:inherit;text-decoration:none}
+
+    /* HEADER */
+    header{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:10px 24px;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,0.06);z-index:50}
+    .logo{display:flex;align-items:center;gap:12px}
+    .logo img{width:56px;height:56px;object-fit:cover;border-radius:10px}
+    .logo h1{color:#ff7b00;font-size:1.15rem}
+    nav{display:flex;gap:10px;align-items:center}
+    .nav-btn{background:#ffebb5;padding:6px 12px;border-radius:8px;font-weight:600}
+    /* cart icon */
+    .cart-btn{position:relative;background:#67c48c;color:#fff;padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+    .cart-count{position:absolute;top:-6px;right:-6px;background:#ff3b30;color:#fff;border-radius:999px;width:20px;height:20px;font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:700}
+
+    /* HERO */
+    .section-home{margin-top:80px;position:relative;text-align:center}
+    .hero-img{width:100%;height:420px;object-fit:cover;filter:brightness(0.9)}
+    .hero-text{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.45);color:#fff;padding:18px 28px;border-radius:10px}
+
+    /* MENU */
+    .section-menu{padding:56px 24px;background:#fff8eb}
+    .section-menu h2{color:#ff7b00;margin-bottom:18px;text-align:center}
+    .menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;max-width:1100px;margin:0 auto}
+    .menu-item{background:#fff;border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;flex-direction:column;gap:8px;align-items:center}
+    .menu-item img{width:100%;height:150px;object-fit:cover;border-radius:8px}
+    .menu-item h3{margin-top:6px}
+    .menu-item .price{color:#ff7b00;font-weight:700}
+    .menu-item button{background:#67c48c;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
+
+    /* Contact */
+    .section-contact{padding:44px 24px;background:#e6ffe0;text-align:center}
+    .contact-box{display:inline-block;background:#fff;padding:18px 28px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+
+    footer{text-align:center;padding:14px;background:#fff5cc;color:#555;margin-top:12px}
+
+    /* CART SIDEBAR */
+    .cart-panel{position:fixed;right:0;top:0;height:100vh;width:380px;max-width:95%;background:#fff;box-shadow:-10px 0 30px rgba(0,0,0,0.12);transform:translateX(110%);transition:transform .28s ease-in-out;z-index:100;padding:18px;display:flex;flex-direction:column;gap:12px}
+    .cart-panel.open{transform:translateX(0)}
+    .cart-header{display:flex;align-items:center;justify-content:space-between}
+    .cart-items{overflow:auto;flex:1;padding-right:6px}
+    .cart-item{display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px dashed #eee}
+    .cart-item img{width:64px;height:64px;object-fit:cover;border-radius:8px}
+    .cart-item .meta{flex:1}
+    .qty-controls{display:flex;align-items:center;gap:6px;margin-top:8px}
+    .qty-controls button{width:28px;height:28px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer}
+    .cart-summary{border-top:1px solid #eee;padding-top:10px}
+    .checkout-btn{width:100%;padding:10px;border-radius:8px;border:none;background:#ff7b00;color:#fff;font-weight:700;cursor:pointer}
+
+    /* CHECKOUT FORM (modal inside cart panel) */
+    .checkout-form{display:none;flex-direction:column;gap:10px}
+    .checkout-form.open{display:flex}
+    .field{display:flex;flex-direction:column;gap:6px}
+    input[type=text], input[type=tel], textarea, select{padding:8px;border-radius:8px;border:1px solid #ddd;width:100%}
+    .payment-instructions{background:#fff9e6;padding:10px;border-radius:8px;border:1px solid #f0e0c0;font-size:0.95rem}
+
+    /* small screens */
+    @media (max-width:640px){
+      header{padding:10px 14px}
+      .hero-img{height:320px}
+      .cart-panel{width:100%}
+    }
+    /* --- Checkout Success Screen --- */
+.checkout-success {
+  display: none;
+  text-align: center;
+  padding: 20px;
+  background: #e8ffe8;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  animation: popIn .5s ease forwards;
+}
+
+.checkout-success h3 {
+  color: #2b8a4e;
+  font-size: 1.3rem;
+  margin-bottom: 6px;
+}
+
+.checkout-success p {
+  opacity: .85;
+}
+
+@keyframes popIn {
+  0% { transform: scale(.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* --- Smooth Fade Animations --- */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn .6s ease forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+.slide-up {
+  opacity: 0;
+  transform: translateY(15px);
+  animation: slideUp .6s ease forwards;
+}
+
+@keyframes slideUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Animasi tombol checkout */
+.checkout-btn:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 14px rgba(255,123,0,0.35);
+  transition: .25s;
+}
+
+  </style>
 </head>
 <body>
 
-  <!-- Header -->
-    <header>
+  <!-- HEADER -->
+  <header>
     <div class="logo">
-      <img src="Red and Orange Illustrative Fresh Juice Logo.png" alt="Logo FreshJuice">
+      <img src="Red and Orange Illustrative Fresh Juice Logo.png" alt="Logo"/>
       <h1>Chill & Juice</h1>
     </div>
     <nav>
-      <a href="#home" class="nav-btn">Home</a>
-      <a href="#menu" class="nav-btn">Menu</a>
-      <a href="#contact" class="nav-btn">Kontak</a>
+      <a class="nav-btn" href="#home">Home</a>
+      <a class="nav-btn" href="#menu">Menu</a>
+      <a class="nav-btn" href="#contact">Kontak</a>
+      <button id="openCart" class="cart-btn" title="Keranjang">
+        Keranjang <span id="cartCount" class="cart-count">0</span>
+      </button>
     </nav>
   </header>
 
-  <!-- Home Section -->
+  <!-- HOME -->
   <section id="home" class="section-home">
-    <img src="WhatsApp Image 2025-10-07 at 20.31.10_e2e442e6.jpg" alt="Semua Produk Jus" class="hero-img">
+    <img src="WhatsApp Image 2025-10-07 at 20.31.10_e2e442e6.jpg" alt="Hero" class="hero-img"/>
     <div class="hero-text">
       <h2>Segarkan Harimu dengan Jus Buah Alami</h2>
       <p>Terbuat dari buah segar pilihan, 100% tanpa pengawet, penuh rasa dan vitamin!</p>
     </div>
   </section>
 
-  <!-- Menu Section -->
+  <!-- MENU -->
   <section id="menu" class="section-menu">
     <h2>Menu Jus Segar</h2>
-    <div class="menu-grid">
-      <div class="menu-item">
+    <div class="menu-grid" id="menuGrid">
+      <!-- Item contoh; atribut data untuk JS -->
+      <div class="menu-item" data-id="mangga" data-name="Jus Mangga" data-price="7000">
         <img src="msnggs.jpg" alt="Jus Mangga">
         <h3>Jus Mangga</h3>
-        <p>Rp 7.000</p>
-      <button class="order-btn">Pesan Sekarang</button>
-
+        <div class="price">Rp 7.000</div>
+        <button class="add-to-cart">Tambah ke Keranjang</button>
       </div>
-      <div class="menu-item">
+
+      <div class="menu-item" data-id="jambu" data-name="Jus Jambu" data-price="7000">
         <img src="jambu.jpg" alt="Jus Jambu">
         <h3>Jus Jambu</h3>
-        <p>Rp 7.000</p>
-       <button class="order-btn">Pesan Sekarang</button>
-
+        <div class="price">Rp 7.000</div>
+        <button class="add-to-cart">Tambah ke Keranjang</button>
       </div>
-      <div class="menu-item">
+
+      <div class="menu-item" data-id="strawberry" data-name="Jus Strawberry" data-price="7000">
         <img src="stroberi.jpg" alt="Jus Strawberry">
         <h3>Jus Strawberry</h3>
-        <p>Rp 7.000</p>
-       <button class="order-btn">Pesan Sekarang</button>
-
+        <div class="price">Rp 7.000</div>
+        <button class="add-to-cart">Tambah ke Keranjang</button>
       </div>
-      <div class="menu-item">
+
+      <div class="menu-item" data-id="naga" data-name="Jus Buah Naga" data-price="7000">
         <img src="naga.jpg" alt="Jus Buah Naga">
         <h3>Jus Buah Naga</h3>
-        <p>Rp 7.000</p>
-        <button class="order-btn">Pesan Sekarang</button>
-
+        <div class="price">Rp 7.000</div>
+        <button class="add-to-cart">Tambah ke Keranjang</button>
       </div>
-      <div class="menu-item">
-        <img src="alpukat.jpg" alt="Jus Alpukat">
-        <h3>Jus Alpukat</h3>
-        <p>Rp 7.000</p>
-        <button class="order-btn">Pesan Sekarang</button>
-
-      </div>
-      <div class="menu-item">
-        <img src="jeruk.jpg" alt="Jus Jeruk">
-        <h3>Jus Jeruk</h3>
-        <p>Rp 7.000</p>
-        <button class="order-btn">Pesan Sekarang</button>
-
-      </div>
-      <div class="menu-item">
-        <img src="semangka.jpg" alt="Jus Semangka">
-        <h3>Jus Semangka</h3>
-        <p>Rp 7.000</p>
-       <button class="order-btn">Pesan Sekarang</button>
-
-      </div>
-      <div class="menu-item">
-        <img src="melon.jpg" alt="Jus Melon">
+       <div class="menu-item" data-id="melon" data-name="melon" data-price="7000">
+        <img src="melon.jpg" alt="Jus melon">
         <h3>Jus Melon</h3>
-        <p>Rp 7.000</p>
-        <button class="order-btn">Pesan Sekarang</button>
-
+        <div class="price">Rp 7.000</div>
+        <button class="add-to-cart">Tambah ke Keranjang</button>
       </div>
+       <div class="menu-item" data-id="semangka" data-name="Jus semangka" data-price="7000">
+        <img src="semangka.jpg" alt="Jus semangka">
+        <h3>Jus Buah Naga</h3>
+        <div class="price">Rp 7.000</div>
+        <button class="add-to-cart">Tambah ke Keranjang</button>
+      </div>
+      <div class="menu-item" data-id="alpukat" data-name="Jus alpukat" data-price="7000">
+        <img src="alpukat.jpg" alt="Jus alpukat">
+        <h3>Jus Alpukat</h3>
+        <div class="price">Rp 7.000</div>
+        <button class="add-to-cart">Tambah ke Keranjang</button>
+      </div>
+      <div class="menu-item" data-id="jeruk" data-name="Jus jeruk" data-price="7000">
+        <img src="jeruk.jpg" alt="Jus semangka">
+        <h3>Jus Jeruk</h3>
+        <div class="price">Rp 7.000</div>
+        <button class="add-to-cart">Tambah ke Keranjang</button>
+      </div>
+
+      <!-- tambahkan item lain sama cara -->
     </div>
   </section>
 
-  <!-- Contact Section -->
+  <!-- CONTACT -->
   <section id="contact" class="section-contact">
     <h2>Kontak Kami</h2>
-    <p>Hubungi kami untuk pemesanan atau informasi lebih lanjut:</p>
     <div class="contact-box">
       <p>📞 085712446218</p>
       <p>📧 chillandjuice@email.com</p>
       <p>📍 SMKN 1 PURWOKERTO</p>
-            <p>IG: chi_lljuice</p>
+      <p>IG: chi_lljuice</p>
     </div>
   </section>
 
-  <footer>
-    <p>© 2025 Chill & Juice. Segar Setiap Saat.</p>
-  </footer>
-<script>
-  const buttons = document.querySelectorAll('.order-btn');
+  <footer>© 2025 Chill & Juice. Segar Setiap Saat.</footer>
 
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      alert("Terimakasih atas pembelian anda!");
+  <!-- CART PANEL -->
+  <aside id="cartPanel" class="cart-panel" aria-hidden="true">
+    <div class="cart-header">
+      <strong>Keranjang Kamu</strong>
+      <button id="closeCart" class="cart-btn" style="background:#ff6b6b">Tutup</button>
+    </div>
+
+    <div id="cartItems" class="cart-items" aria-live="polite">
+      <!-- list item akan di-render di sini -->
+      <p style="opacity:.6">Keranjang kosong — tambahkan menu untuk mulai berbelanja.</p>
+    </div>
+
+    <div class="cart-summary">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>Subtotal</div>
+        <div id="subtotalText">Rp 0</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+        <div>Biaya Antar (estimasi)</div>
+        <div id="deliveryText">Rp 5.000</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-weight:800">
+        <div>Total</div>
+        <div id="totalText">Rp 5.000</div>
+      </div>
+      <button id="openCheckout" class="checkout-btn" style="margin-top:12px">Checkout</button>
+      <form id="checkoutForm" class="checkout-form" onsubmit="return false">
+        <div id="checkoutSuccess" class="checkout-success">
+  <h3>Pesanan Berhasil!</h3>
+  <p>Terima kasih sudah memesan di Chill & Juice 🍹</p>
+  <p>Pesananmu sedang diproses.</p>
+</div>
+
+
+
+      
+
+      <!-- Checkout form -->
+      <form id="checkoutForm" class="checkout-form" onsubmit="return false">
+        <div class="field">
+          <label>Nama Lengkap</label>
+          <input id="custName" type="text" placeholder="Nama penerima" required>
+        </div>
+        <div class="field">
+          <label>No. HP</label>
+          <input id="custPhone" type="tel" placeholder="0812xxxx" required>
+        </div>
+        <div class="field">
+          <label>Alamat Lengkap</label>
+          <textarea id="custAddress" rows="2" placeholder="Alamat untuk pengantaran" required></textarea>
+        </div>
+
+        <div class="field">
+          <label>Metode Pembayaran</label>
+          <select id="paymentMethod" required>
+            <option value="cod">Bayar di Tempat (Cash on Delivery)</option>
+            <option value="transfer">Transfer Bank / E-wallet (Manual)</option>
+            <option value="card">Kartu / Pembayaran Online (Simulasi)</option>
+          </select>
+        </div>
+
+        <div id="paymentInstructions" class="payment-instructions" aria-live="polite">
+          Pilih metode pembayaran untuk melihat instruksi.
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button id="confirmOrder" class="checkout-btn" style="background:#2b8a4e">Konfirmasi Pesanan</button>
+          <button id="cancelCheckout" type="button" class="cart-btn" style="background:#ddd;color:#333">Batal</button>
+        </div>
+      </form>
+    </div>
+
+  </aside>
+
+  <!-- SCRIPT: CART LOGIC -->
+  <script>
+    // ---------- util ----------
+    const rupiah = (n) => {
+      // n is Number (rupiah). Format: Rp 1.234.000
+      return 'Rp ' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    };
+
+    // ---------- cart state ----------
+    const CART_KEY = 'cj_cart_v1';
+    const DELIVERY_FEE = 5000; // default pengantaran
+    let cart = JSON.parse(localStorage.getItem(CART_KEY) || '{}');
+
+    // ---------- DOM ----------
+    const cartCountEl = document.getElementById('cartCount');
+    const cartPanel = document.getElementById('cartPanel');
+    const openCartBtn = document.getElementById('openCart');
+    const closeCartBtn = document.getElementById('closeCart');
+    const cartItemsEl = document.getElementById('cartItems');
+    const subtotalText = document.getElementById('subtotalText');
+    const deliveryText = document.getElementById('deliveryText');
+    const totalText = document.getElementById('totalText');
+    const openCheckoutBtn = document.getElementById('openCheckout');
+    const checkoutForm = document.getElementById('checkoutForm');
+    const paymentMethod = document.getElementById('paymentMethod');
+    const paymentInstructions = document.getElementById('paymentInstructions');
+    const confirmOrderBtn = document.getElementById('confirmOrder');
+    const cancelCheckoutBtn = document.getElementById('cancelCheckout');
+
+    // ---------- initialize ----------
+    document.addEventListener('DOMContentLoaded', () => {
+      // add listeners to add-to-cart buttons
+      document.querySelectorAll('.add-to-cart').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const itemEl = btn.closest('.menu-item');
+          const id = itemEl.dataset.id;
+          const name = itemEl.dataset.name;
+          const price = Number(itemEl.dataset.price);
+          addToCart({ id, name, price, qty: 1, img: itemEl.querySelector('img')?.src || '' });
+        });
+      });
+
+      // header cart open/close
+      openCartBtn.addEventListener('click', () => { toggleCart(true); });
+      closeCartBtn.addEventListener('click', () => { toggleCart(false); });
+
+      openCheckoutBtn.addEventListener('click', () => {
+        checkoutForm.classList.add('open');
+        openCheckoutBtn.style.display = 'none';
+      });
+      cancelCheckoutBtn.addEventListener('click', () => {
+        checkoutForm.classList.remove('open');
+        openCheckoutBtn.style.display = 'block';
+      });
+
+      paymentMethod.addEventListener('change', updatePaymentInstructions);
+
+      confirmOrderBtn.addEventListener('click', handleConfirmOrder);
+
+      renderCart();
+      updatePaymentInstructions();
     });
-  });
-</script>
 
+    // ---------- functions ----------
+    function saveCart() {
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    }
+
+    function cartCount() {
+      return Object.values(cart).reduce((s,i)=> s + i.qty, 0);
+    }
+
+    function subtotal() {
+      return Object.values(cart).reduce((s,i)=> s + (i.price * i.qty), 0);
+    }
+
+    function toggleCart(open) {
+      if(open) {
+        cartPanel.classList.add('open');
+        cartPanel.setAttribute('aria-hidden','false');
+      } else {
+        cartPanel.classList.remove('open');
+        cartPanel.setAttribute('aria-hidden','true');
+      }
+    }
+
+    function addToCart(item) {
+      // item: {id,name,price,qty,img}
+      if(cart[item.id]) {
+        cart[item.id].qty += item.qty;
+      } else {
+        cart[item.id] = { name: item.name, price: item.price, qty: item.qty, img: item.img };
+      }
+      saveCart();
+      renderCart();
+      // buka panel untuk feedback
+      toggleCart(true);
+    }
+
+    function removeFromCart(id) {
+      delete cart[id];
+      saveCart();
+      renderCart();
+    }
+
+    function changeQty(id, delta) {
+      if(!cart[id]) return;
+      cart[id].qty += delta;
+      if(cart[id].qty <= 0) delete cart[id];
+      saveCart();
+      renderCart();
+    }
+
+    function renderCart() {
+      // update count
+      cartCountEl.textContent = cartCount();
+      // render items
+      cartItemsEl.innerHTML = '';
+      const keys = Object.keys(cart);
+      if(keys.length === 0) {
+        cartItemsEl.innerHTML = '<p style="opacity:.6">Keranjang kosong — tambahkan menu untuk mulai berbelanja.</p>';
+      } else {
+        keys.forEach(id => {
+          const it = cart[id];
+          const itemNode = document.createElement('div');
+          itemNode.className = 'cart-item';
+          itemNode.innerHTML = `
+            <img src="${it.img || 'https://via.placeholder.com/80'}" alt="${it.name}">
+            <div class="meta">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <strong>${it.name}</strong>
+                <div>${rupiah(it.price)}</div>
+              </div>
+              <div class="qty-controls">
+                <button data-action="dec" data-id="${id}">−</button>
+                <div style="min-width:28px;text-align:center">${it.qty}</div>
+                <button data-action="inc" data-id="${id}">+</button>
+                <button data-action="remove" data-id="${id}" style="margin-left:8px;background:transparent;border:none;color:#ff3b30;cursor:pointer">Hapus</button>
+              </div>
+            </div>
+          `;
+          cartItemsEl.appendChild(itemNode);
+        });
+
+        // add event listeners for qty controls
+        cartItemsEl.querySelectorAll('button[data-action]').forEach(b => {
+          const act = b.dataset.action;
+          const id = b.dataset.id;
+          b.addEventListener('click', () => {
+            if(act === 'inc') changeQty(id, 1);
+            if(act === 'dec') changeQty(id, -1);
+            if(act === 'remove') removeFromCart(id);
+          });
+        });
+      }
+
+      // update totals
+      const sub = subtotal();
+      subtotalText.textContent = rupiah(sub);
+      deliveryText.textContent = rupiah(keys.length ? DELIVERY_FEE : 0);
+      totalText.textContent = rupiah(sub + (keys.length ? DELIVERY_FEE : 0));
+    }
+
+    // payment instructions based on selection
+    function updatePaymentInstructions() {
+      const val = paymentMethod.value;
+      if(val === 'cod') {
+        paymentInstructions.innerHTML = `<strong>Pembayaran di Tempat (Cash)</strong><br/>Bayar kurir saat pesanan tiba. Harap siapkan jumlah pas untuk mempercepat transaksi.<br/><em>Tidak ada biaya tambahan.</em>`;
+      } else if(val === 'transfer') {
+        paymentInstructions.innerHTML = `<strong>Transfer / E-wallet (Manual)</strong><br/>Silakan transfer ke rekening atau e-wallet yang tertera pada instruksi setelah konfirmasi. Setelah transfer, upload bukti atau kirim ke WhatsApp pemilik untuk verifikasi.<br/><em>Contoh instruksi (simulasi): Kirim ke BCA 123456789 a.n. Chill & Juice.</em>`;
+      } else if(val === 'card') {
+        paymentInstructions.innerHTML = `<strong>Pembayaran Online (Simulasi)</strong><br/>Metode ini adalah simulasi — untuk menerima pembayaran kartu/e-wallet secara otomatis, integrasikan situs dengan payment gateway (mis. provider lokal/ internasional).<br/><em>Pesanan akan dianggap terbayar otomatis (simulasi).</em>`;
+      } else {
+        paymentInstructions.textContent = 'Pilih metode pembayaran untuk melihat instruksi';
+      }
+    }
+
+    // when user confirms order
+    function handleConfirmOrder() {
+      const items = Object.values(cart);
+      if(items.length === 0) {
+        alert('Keranjang kosong. Tambahkan produk terlebih dahulu.');
+        return;
+      }
+
+      // simple form validation
+      const name = document.getElementById('custName').value.trim();
+      const phone = document.getElementById('custPhone').value.trim();
+      const address = document.getElementById('custAddress').value.trim();
+      const method = paymentMethod.value;
+
+      if(!name || !phone || !address) {
+        alert('Lengkapi nama, nomor hp, dan alamat.');
+        return;
+      }
+
+      // build order summary (simple)
+      const order = {
+        id: 'ORD' + Date.now(),
+        customer: { name, phone, address },
+        items: items,
+        subtotal: subtotal(),
+        delivery: (items.length ? DELIVERY_FEE : 0),
+        total: subtotal() + (items.length ? DELIVERY_FEE : 0),
+        paymentMethod: method,
+        createdAt: new Date().toISOString()
+      };
+
+      // For demo we simply "submit" order locally and clear cart:
+      console.log('Order placed (demo):', order);
+
+      // Show instructions to user
+      let msg = `Terima kasih, ${name}!\nPesananmu (ID: ${order.id}) telah dibuat.\nTotal: ${rupiah(order.total)}\nMetode: ${method === 'cod' ? 'Bayar di Tempat' : method === 'transfer' ? 'Transfer' : 'Kartu/Online (Simulasi)'}\n\nInstruksi:\n`;
+      if(method === 'cod') msg += 'Siapkan pembayaran pada saat kurir tiba.';
+      else if(method === 'transfer') msg += 'Lakukan transfer ke rekening bisnis (contoh: BCA 1234xxx a.n. Chill & Juice), lalu kirim bukti ke WhatsApp: 0857xxxxxx.';
+      else msg += 'Pembayaran dianggap berhasil (simulasi).';
+
+      alert(msg);
+
+      // clear cart and form
+      cart = {};
+      saveCart();
+      renderCart();
+      checkoutForm.classList.remove('open');
+      document.getElementById('custName').value = '';
+      document.getElementById('custPhone').value = '';
+      document.getElementById('custAddress').value = '';
+      openCheckoutBtn.style.display = 'block';
+      toggleCart(false);
+    }
+
+    // expose for debugging (optional)
+    window._CJ = { cart, addToCart, renderCart };
+  </script>
 </body>
 </html>
